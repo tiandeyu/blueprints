@@ -117,7 +117,7 @@ action:
                   - service: light.turn_on
                     target: !input day_lights
                     data:
-                      brightness: !input day_brightness
+                      brightness_pct: !input day_brightness
               - conditions:
                   - condition: state
                     entity_id: !input sleeping_sensor
@@ -126,7 +126,7 @@ action:
                   - service: light.turn_on
                     target: !input night_lights
                     data:
-                      brightness: !input night_brightness
+                      brightness_pct: !input night_brightness
       - conditions:
           - condition: state
             entity_id: !input motion_sensor
