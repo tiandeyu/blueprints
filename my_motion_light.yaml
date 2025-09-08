@@ -1,0 +1,138 @@
+blueprint:
+  name: My Motion Light
+  description: |
+    使用人体存在传感器和光照传感器自动控制灯光。
+    - 光照低且有人时自动开灯
+    - 人离开立即关指定的灯
+    - 根据 sleeping_sensor 判断白天/睡眠，选择不同灯和亮度
+  domain: automation
+  input:
+    motion_sensor:
+      name: 人体存在传感器
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: occupancy
+
+    light_sensor:
+      name: 光照传感器
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+
+    day_lights:
+      name: 白天时要开的灯
+      selector:
+        target:
+          entity:
+            domain: light
+      default: {}
+
+    day_brightness:
+      name: 白天时灯光亮度
+      description: 数值越大越亮
+      default: 50
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          mode: slider
+          step: 1.0
+          unit_of_measurement: '%'
+
+    night_lights:
+      name: 睡觉时要开的灯
+      selector:
+        target:
+          entity:
+            domain: light
+      default: {}
+
+    night_brightness:
+      name: 睡觉时灯光亮度
+      description: 数值越小越暗
+      default: 1
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          mode: slider
+          step: 1.0
+          unit_of_measurement: '%'
+
+    off_lights:
+      name: 人走后关闭的灯
+      selector:
+        target:
+          entity:
+            domain: light
+      default: {}
+
+    sleeping_sensor:
+      name: 睡眠状态传感器
+      description: >
+        on = 睡觉（夜晚灯），off = 清醒（白天灯）。
+      selector:
+        entity:
+          domain: binary_sensor
+
+    light_threshold:
+      name: 光照阈值 (lx)
+      description: 低于该值才会开灯
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: lx
+          mode: slider
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+    to: "on"
+  - platform: state
+    entity_id: !input motion_sensor
+    to: "off"
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "on"
+          - condition: numeric_state
+            entity_id: !input light_sensor
+            below: !input light_threshold
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: !input sleeping_sensor
+                    state: "off"
+                sequence:
+                  - service: light.turn_on
+                    target: !input day_lights
+                    data:
+                      brightness: !input day_brightness
+              - conditions:
+                  - condition: state
+                    entity_id: !input sleeping_sensor
+                    state: "on"
+                sequence:
+                  - service: light.turn_on
+                    target: !input night_lights
+                    data:
+                      brightness: !input night_brightness
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+        sequence:
+          - service: light.turn_off
+            target: !input off_lights
+
+mode: restart

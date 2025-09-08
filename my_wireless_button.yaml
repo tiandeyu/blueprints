@@ -1,0 +1,83 @@
+blueprint:
+  name: My Wireless Button
+  description: 使用无线开关的单击、双击、长按事件，分别控制不同的灯或窗帘
+  domain: automation
+  input:
+    event_single:
+      name: 单击事件实体
+      description: 请选择无线开关的单击事件实体
+      selector:
+        entity:
+          domain: event
+    single_action:
+      name: 单击控制的设备
+      description: 单击时控制的灯光或窗帘
+      default: []
+      selector:
+        target:
+          entity:
+            domain:
+              - light
+              - cover
+
+    event_double:
+      name: 双击事件实体
+      description: 请选择无线开关的双击事件实体
+      selector:
+        entity:
+          domain: event
+    double_action:
+      name: 双击控制的设备
+      description: 双击时控制的灯光或窗帘
+      default: []
+      selector:
+        target:
+          entity:
+            domain:
+              - light
+              - cover
+
+    event_long:
+      name: 长按事件实体
+      description: 请选择无线开关的长按事件实体
+      selector:
+        entity:
+          domain: event
+    long_action:
+      name: 长按控制的设备
+      description: 长按时控制的灯光或窗帘
+      default: []
+      selector:
+        target:
+          entity:
+            domain:
+              - light
+              - cover
+
+trigger:
+  - platform: state
+    entity_id: !input event_single
+    id: single
+  - platform: state
+    entity_id: !input event_double
+    id: double
+  - platform: state
+    entity_id: !input event_long
+    id: long
+
+action:
+  - choose:
+      - conditions: "{{ trigger.id == 'single' }}"
+        sequence:
+          - service: homeassistant.toggle
+            target: !input single_action
+      - conditions: "{{ trigger.id == 'double' }}"
+        sequence:
+          - service: homeassistant.toggle
+            target: !input double_action
+      - conditions: "{{ trigger.id == 'long' }}"
+        sequence:
+          - service: homeassistant.toggle
+            target: !input long_action
+
+mode: single
