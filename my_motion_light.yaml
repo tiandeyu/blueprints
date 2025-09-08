@@ -120,7 +120,7 @@ action:
                     entity_id: !input sleeping_sensor
                     state: "off"
                 sequence:
-                  - service: light.turn_on
+                  - service: homeassistant.turn_on
                     target: !input day_lights
                     data:
                       brightness_pct: !input day_brightness
@@ -129,7 +129,7 @@ action:
                     entity_id: !input sleeping_sensor
                     state: "on"
                 sequence:
-                  - service: light.turn_on
+                  - service: homeassistant.turn_on
                     target: !input night_lights
                     data:
                       brightness_pct: !input night_brightness
@@ -138,7 +138,7 @@ action:
             entity_id: !input motion_sensor
             state: "off"
         sequence:
-          - service: light.turn_off
+          - service: homeassistant.turn_off
             target: !input off_lights
 
 mode: restart
