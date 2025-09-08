@@ -1,0 +1,72 @@
+blueprint:
+  name: My Motion Switch
+  description: |
+    使用人体存在传感器和光照传感器自动控制开关。
+    - 光照低且有人时自动开开关
+    - 人离开立即关指定的开关
+  domain: automation
+  input:
+    motion_sensor:
+      name: 人体存在传感器
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: occupancy
+
+    light_sensor:
+      name: 光照传感器
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+
+    switches:
+      name: 控制的开关
+      selector:
+        target:
+          entity:
+            domain: switch
+      default: {}
+
+    light_threshold:
+      name: 光照阈值 (lx)
+      description: 低于该值才会开灯
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: lx
+          mode: slider
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+    to: "on"
+  - platform: state
+    entity_id: !input motion_sensor
+    to: "off"
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "on"
+          - condition: numeric_state
+            entity_id: !input light_sensor
+            below: !input light_threshold
+        sequence:
+          - service: switch.turn_on
+            target: !input switches
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+        sequence:
+          - service: switch.turn_off
+            target: !input switches
+
+mode: restart
