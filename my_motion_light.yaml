@@ -26,19 +26,21 @@ blueprint:
       selector:
         target:
           entity:
-            domain: light
+            domain: 
+              - light
+              - switch
       default: {}
 
     day_brightness:
       name: 白天时灯光亮度
       description: 数值越大越亮
-      default: 50
+      default: 100
       selector:
         number:
-          min: 1.0
-          max: 100.0
+          min: 1
+          max: 100
           mode: slider
-          step: 1.0
+          step: 1
           unit_of_measurement: '%'
 
     night_lights:
@@ -46,7 +48,9 @@ blueprint:
       selector:
         target:
           entity:
-            domain: light
+            domain: 
+              - light
+              - switch
       default: {}
 
     night_brightness:
@@ -55,10 +59,10 @@ blueprint:
       default: 1
       selector:
         number:
-          min: 1.0
-          max: 100.0
+          min: 1
+          max: 100
           mode: slider
-          step: 1.0
+          step: 1
           unit_of_measurement: '%'
 
     off_lights:
@@ -66,7 +70,9 @@ blueprint:
       selector:
         target:
           entity:
-            domain: light
+            domain: 
+              - light
+              - switch
       default: {}
 
     sleeping_sensor:
