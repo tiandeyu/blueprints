@@ -20,14 +20,6 @@ blueprint:
           domain: sensor
           device_class: illuminance
 
-    switches:
-      name: 控制的开关
-      selector:
-        target:
-          entity:
-            domain: switch
-      default: {}
-
     light_threshold:
       name: 光照阈值 (lx)
       description: 低于该值才会开灯
@@ -38,7 +30,15 @@ blueprint:
           max: 1000
           unit_of_measurement: lx
           mode: slider
-
+          
+    switches:
+      name: 控制的开关
+      selector:
+        target:
+          entity:
+            domain: switch
+      default: {}
+      
 trigger:
   - platform: state
     entity_id: !input motion_sensor
