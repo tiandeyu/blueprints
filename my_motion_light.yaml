@@ -21,6 +21,17 @@ blueprint:
           domain: sensor
           device_class: illuminance
 
+    light_threshold:
+      name: 光照阈值 (lx)
+      description: 低于该值才会开灯
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: lx
+          mode: slider
+
     day_lights:
       name: 白天时要开的灯
       selector:
@@ -40,6 +51,14 @@ blueprint:
           mode: slider
           step: 1
           unit_of_measurement: '%'
+
+    sleeping_sensor:
+      name: 睡眠状态传感器
+      description: >
+        on = 睡觉（夜晚灯），off = 清醒（白天灯）。
+      selector:
+        entity:
+          domain: binary_sensor
 
     night_lights:
       name: 睡觉时要开的灯
@@ -68,25 +87,6 @@ blueprint:
           entity:
             domain: light
       default: {}
-
-    sleeping_sensor:
-      name: 睡眠状态传感器
-      description: >
-        on = 睡觉（夜晚灯），off = 清醒（白天灯）。
-      selector:
-        entity:
-          domain: binary_sensor
-
-    light_threshold:
-      name: 光照阈值 (lx)
-      description: 低于该值才会开灯
-      default: 50
-      selector:
-        number:
-          min: 0
-          max: 1000
-          unit_of_measurement: lx
-          mode: slider
 
 trigger:
   - platform: state
